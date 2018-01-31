@@ -1,0 +1,10 @@
+[Unit]
+Description=Scale Weight Sensor
+After=multi-user.target
+
+[Service]
+Type=idle
+ExecStart=/usr/bin/python /home/scale/basicPubSub.py -e a2b48gn42hre1b.iot.us-west-2.amazonaws.com -r /home/scale/root-CA.crt -c /home/scale/weight_sensor.cert.pem -k /home/scale/weight_sensor.private.key --topic=weight  
+
+[Install]
+WantedBy=multi-user.target

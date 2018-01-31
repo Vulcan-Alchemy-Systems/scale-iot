@@ -22,6 +22,7 @@ import argparse
 import json
 import RPi.GPIO as GPIO
 import time
+import datetime
 import sys
 from hx711 import HX711
 
@@ -29,7 +30,7 @@ AllowedActions = ['both', 'publish', 'subscribe']
 
 # hx stuff
 hx = HX711(5, 6)
-hx.set_reference_unit(92)
+hx.set_reference_unit(404)
 hx.reset()
 hx.tare()
 
@@ -115,17 +116,22 @@ time.sleep(2)
 loopCount = 0
 while True:
     val = hx.get_weight(5)
-    if val > 0:
-        if args.mode == 'both' or args.mode == 'publish':
-            message = {}
-            message['message'] = args.message
-            message['sequence'] = loopCount
-            message['weight'] = val
-            messageJson = json.dumps(message)
-            myAWSIoTMQTTClient.publish(topic, messageJson, 1)
-            if args.mode == 'publish':
-                print('Published topic %s: %s\n' % (topic, messageJson))
-            loopCount += 1
+    if val < 0:
+        val = 0
+
+    if args.mode == 'both' or args.mode == 'publish':
+        now = datetime.datetime.now()
+        message = {}
+        message['topic'] = '/vulcan/scale/weight'
+        message['message'] = args.message
+        message['sequence'] = loopCount
+        message['weight'] = val
+        message['created'] =  now.strftime("%Y-%m-%d %H:%M:%S")
+        messageJson = json.dumps(message)
+        myAWSIoTMQTTClient.publish(topic, messageJson, 1)
+        if args.mode == 'publish':
+            print('Published topic %s: %s\n' % (topic, messageJson))
+        loopCount += 1
     hx.power_down()
     hx.power_up()
     time.sleep(1)

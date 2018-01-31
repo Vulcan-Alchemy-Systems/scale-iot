@@ -18,4 +18,4 @@ fi
 
 # run pub/sub sample app using certificates downloaded in package
 printf "\nRunning pub/sub sample application...\n"
-python ./basicPubSub.py -e a2b48gn42hre1b.iot.us-west-2.amazonaws.com -r root-CA.crt -c weight_sensor.cert.pem -k weight_sensor.private.key
+python ./basicPubSub.py -e a2b48gn42hre1b.iot.us-west-2.amazonaws.com -r root-CA.crt -c weight_sensor.cert.pem -k weight_sensor.private.key --topic=weight
